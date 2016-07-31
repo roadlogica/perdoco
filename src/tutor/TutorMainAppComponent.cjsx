@@ -4,8 +4,7 @@ TutorMainAppComponent = React.createClass
   displayName: "TutorMainAppComponent"
 
   render: ->
-    <div>
-      TutorMainAppComponent
+    <div id='gamediv'>
     </div>
 
 module.exports = TutorMainAppComponent

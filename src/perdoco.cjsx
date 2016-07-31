@@ -4,7 +4,6 @@
 require './vendor/bootstrap/css/bootstrap.css'
 require './vendor/bootstrap/js/bootstrap.js'
 require './perdoco.css'
-require './favicon.ico'
 
 React = require 'react'
 ReactDOM = require 'react-dom'

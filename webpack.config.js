@@ -1,16 +1,22 @@
-var webpack = require('webpack'),
-  HtmlWebpackPlugin = require('html-webpack-plugin');
+var webpack = require('webpack');
+var HtmlWebpackPlugin = require('html-webpack-plugin');
+var CopyWebpackPlugin = require('copy-webpack-plugin');
+var path = require('path');
 
 module.exports = [
   {
     name: 'client',
     cache: true,
+    context: path.join(__dirname, 'src'),
+    devServer: {
+        outputPath: path.join(__dirname, 'dist')
+    },
     entry: {
-        perdoco: './src/perdoco',
-        tutor: './src/tutor'
+        perdoco: './perdoco',
+        tutor: './tutor'
     },
     output: {
-      path: __dirname + '/dist',
+      path: path.join(__dirname, 'dist'),
       filename: "[name].entry.js"
     },
     resolve: {
@@ -50,6 +56,10 @@ module.exports = [
       ]
     },
     plugins: [
+      new CopyWebpackPlugin([
+          { from: './favicon.ico' },
+          { from: './tutor/games', to:'games' },
+      ]),
       new webpack.DefinePlugin({
         'process.env':{
           'NODE_ENV': JSON.stringify('production')
@@ -57,13 +67,13 @@ module.exports = [
       }),
       new HtmlWebpackPlugin({
         title: 'Main App',
-        template: 'src/default.html.slim',
+        template: 'default.html.slim',
         chunks: ['perdoco']
       }),
       new HtmlWebpackPlugin({
         title: 'Tutor App',
         filename: 'tutor.html',
-        template: 'src/tutor.html.slim',
+        template: 'tutor.html.slim',
         chunks: ['tutor']
       }),
       new webpack.ProvidePlugin({
