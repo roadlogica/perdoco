@@ -87,6 +87,10 @@ app.get('/api/getplayers', function (req, res) {
   res.send(JSON.stringify(getPlayers()));
 });
 
+app.get('/tutor', function(req, res) {
+  res.redirect('/tutor.html');
+});
+
 app.use(express.static(__dirname + '/dist/'));
 
 server.listen(80, function() {
@@ -98,4 +102,3 @@ server.listen(80, function() {
     console.log('API listening at http://%s:%s, static dir %s', host, port, __dirname + '/html');
   }
 });
-

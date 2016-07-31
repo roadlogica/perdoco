@@ -5,10 +5,13 @@ module.exports = [
   {
     name: 'client',
     cache: true,
-    entry: './src/perdoco',
+    entry: {
+        perdoco: './src/perdoco',
+        tutor: './src/tutor'
+    },
     output: {
       path: __dirname + '/dist',
-      filename: 'assets/bundle.js'
+      filename: "[name].entry.js"
     },
     resolve: {
       extensions: ['', '.jsx', '.cjsx', '.coffee', '.js', '.html'],
@@ -53,8 +56,15 @@ module.exports = [
         }
       }),
       new HtmlWebpackPlugin({
-        title: 'Custom template',
-        template: 'src/default.html.slim'
+        title: 'Main App',
+        template: 'src/default.html.slim',
+        chunks: ['perdoco']
+      }),
+      new HtmlWebpackPlugin({
+        title: 'Tutor App',
+        filename: 'tutor.html',
+        template: 'src/tutor.html.slim',
+        chunks: ['tutor']
       }),
       new webpack.ProvidePlugin({
         $: 'jquery',
