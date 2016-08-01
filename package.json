@@ -3,7 +3,7 @@
   "name": "Perdoco",
   "scripts": {
     "test": "webpack-dev-server",
-    "install": "./node_modules/.bin/webpack --colors --progress --watch -p",
+    "install": "./node_modules/.bin/webpack --colors --progress --watch",
     "start": "sudo node server.js development"
   },
   "devDependencies": {
@@ -21,6 +21,7 @@
     "html-webpack-plugin": "^2.22.0",
     "jquery": "^3.1.0",
     "jsx-loader": "^0.13.2",
+    "lodash": "^4.14.1",
     "react": "^15.2.1",
     "react-dom": "^15.2.1",
     "react-redux": "^4.4.5",

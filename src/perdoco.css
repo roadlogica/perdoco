@@ -2,11 +2,11 @@ html, body {
   overflow:hidden;
   height: 100%;
   margin: 0;
-  -webkit-touch-callout: none;
+  /*-webkit-touch-callout: none;
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
-  user-select: none;
+  user-select: none;*/
 }
 
 .navbar {
@@ -31,15 +31,37 @@ html, body {
 
 #canvas {
   position:relative;
+  display:inline-block;
+  overflow:hidden;
+  min-width:100%;
   background-color: #00b3ee;
 }
 
 #innercanvas {
-  margin:5px;
-  height:calc(100% - 80px);
+  margin:0px;
+  position:absolute;
+  top:50px;
+  min-height:calc(100% - 70px);
+  display:block;
+  min-width:100%;
   border:1px solid red;
+}
+
+#scrollcontainer {
+  padding-top: 20px;
+  position:absolute;
+  top:50px;
+  overflow-y: auto;
+  margin:0;
+  display:block;
+  min-width:100%;
+  height:calc(100% - 70px);
 }
 
 .nav > li {
   display: inline-block;
+}
+
+.btn {
+  margin-right:5px;
 }

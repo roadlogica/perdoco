@@ -12,12 +12,6 @@ AppCanvas = React.createClass
     @unsubscribe()
   render: ->
     <div className="row" id="innercanvas">
-      <div className="col-md-4">
-        <input id="element" />
-      </div>
-      <div className="col-md-8">
-        <span className="glyphicon glyphicon-search" aria-hidden="true"></span>
-      </div>
     </div>
 
 module.exports = AppCanvas

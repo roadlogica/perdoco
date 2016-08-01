@@ -1,0 +1,33 @@
+.lb-ledrow {
+  line-height:0px;
+}
+.lb-face {
+  line-height:0px;
+  width:auto;
+}
+.lb-led {
+  display:inline-block;
+}
+
+.lb-led-editrow {
+
+}
+.lb-led-edit {
+  display:inline-block;
+  border:1px solid gray;
+  border-radius: 5px;
+  height:26px;
+  width:26px;
+  margin-right:5px;
+}
+
+.selectface {
+  float:left;
+}
+
+.selectfacecontainer {
+  float:left;
+  padding:0px 1px 2px 1px;
+  background-color: #ddd;
+  margin-bottom: 5px;
+}

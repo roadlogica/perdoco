@@ -3,16 +3,23 @@
 #
 require './vendor/bootstrap/css/bootstrap.css'
 require './vendor/bootstrap/js/bootstrap.js'
+
 require './perdoco.css'
 
 React = require 'react'
 ReactDOM = require 'react-dom'
 { createStore, compose } = require 'redux'
+ls = require './js/_localstorage'
 
 #
 # Setup Global Redux Store
 #
-perdocoRedux = (state = {appstate:'CANVAS'}, action) ->
+defaultAppState = {
+  appstate:'CANVAS'
+  config:ls.getConfig()
+}
+
+perdocoRedux = (state = defaultAppState, action) ->
   switch action.type
     when 'SETSTATE'
       return Object.assign({}, state, appstate: action.appstate)
@@ -37,59 +44,89 @@ ReactDOM.render <PerdocoMainAppComponent />, document.getElementById 'content'
 
 
 #
-# Socket.io Client and Full Screen App JS
+# Full Screen App JS
 #
 console.log 'Perdoco Started'
 socket = require('socket.io-client')()
-window.addEventListener 'load', ->
-  $('#msg').html 'load'
-  window.scrollTo 0, 1
+
+socket.off('connect').on 'connect', (data) ->
+  config = ls.getConfig()
+  config.mode = 'student'
+  socket.emit 'register', config
   return
-document.addEventListener 'touchmove', (e) ->
-  $('#msg').html 'TouchMove'
-  e.preventDefault()
+
+#
+# Full Screen App JS
+#
+# window.addEventListener 'load', ->
+#   $('#msg').html 'load'
+#   window.scrollTo 0, 1
+#   return
+
+# window.addEventListener 'touchmove', (e) ->
+#   e.preventDefault()
+#   return
+
+window.msg = (msg) ->
+  $('#msg').html msg
   return
-element = document.getElementById('element')
+
 window.focused = false
 window.setCanvasHeight = ->
   document.getElementById('canvas').setAttribute("style","height:"+window.newHeight+"px");
 window.shrinkForKeyboard = ->
   setTimeout (->
     window.scrollTo(0,0)
-    element.value = "focus " + window.origHeight + "," + window.innerHeight
+    window.msg "focus " + window.origHeight + "," + window.innerHeight
     if window.origHeight == window.innerHeight
       window.scrollTo 0, document.body.scrollHeight
       setTimeout (->
-        window.newHeight = window.innerHeight - (window.pageYOffset || element.scrollTop);
-        element.value = "focus2 " + window.origHeight + "," + window.newHeight
+        window.msg element.scrollTop
+        window.newHeight = window.innerHeight - (window.pageYOffset || window.scrollTop);
+        window.msg "focus2 " + window.origHeight + "," + window.newHeight
         window.scrollTo(0,0)
         window.setCanvasHeight()
         return
       ), 500
+      return
     else
       window.newHeight = window.innerHeight
       window.setCanvasHeight()
   ), 500
-element.onfocus = ->
-  window.focused = true
-  window.origHeight = document.body.scrollHeight
-  window.shrinkForKeyboard()
-  return
+
 window.onresize = ->
   if /Safari/.test(navigator.userAgent) and /Apple Computer/.test(navigator.vendor)  && window.focused
     window.origHeight = document.body.scrollHeight
-    window.shrinkForKeyboard()
+    window.msg "Apple Resize "  + window.origHeight + "," + window.innerHeight + ", " + document.body.scrollTop
+    if document.body.scrollTop == 0
+      window.shrinkForKeyboard()
   else
     window.newHeight = window.innerHeight
-    element.value = "resize " + window.focused + " : " + document.body.scrollHeight + "," + window.innerHeight
+    window.msg "resize " + window.focused + " : " + document.body.scrollHeight + "," + window.innerHeight
     window.setCanvasHeight()
   return
-element.onblur = ->
-  window.focused = false
-  window.newHeight = window.innerHeight
-  element.value = "blur " + document.body.scrollHeight + "," + window.innerHeight
-  window.setCanvasHeight()
-  return
+
 window.onload = ->
   window.newHeight = window.innerHeight
   window.setCanvasHeight()
+  window.msg navigator.userAgent + " ||| " + navigator.vendor
+
+window.onerror = (errorMsg, url, lineNumber) ->
+  window.msg 'Error occured at line ' + lineNumber + ' : ' + errorMsg
+  false
+
+window.onbeforeunload = ->
+  window.msg "You work will be lost."
+
+
+resetToTop = ->
+  if document.body.scrollTop > 0 or document.documentElement.scrollTop > 0
+    window.origHeight = document.body.scrollHeight
+    window.shrinkForKeyboard()
+  return
+
+debouncedResetToTop = _.debounce( s._makeSearchRequest, 1000 )
+
+window.onscroll = ->
+  debouncedResetToTop()
+  return

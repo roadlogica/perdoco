@@ -23,9 +23,11 @@ AppNavbar = React.createClass
       requestFullScreen.call docEl
     else
       cancelFullScreen.call doc
+    $("#pdnavbar").collapse('hide')
     @forceUpdate()
   menu: (menuitem) ->
     window.reduxStore.dispatch({type:'SETSTATE',appstate:menuitem})
+    $("#pdnavbar").collapse('hide')
     return
   render: ->
     if @notFullScreen()
@@ -62,10 +64,10 @@ AppNavbar = React.createClass
         </ul>
     ).bind(this)
     pdMenu = makeMenu()
-    <nav className="navbar navbar-default">
+    <nav className="navbar navbar-default navbar-fixed-top">
       <div className="container-fluid">
         <div className="navbar-header">
-          <button type="button" className="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+          <button type="button" className="navbar-toggle collapsed" data-toggle="collapse" data-target="#pdnavbar" aria-expanded="false">
             <span className="sr-only">Toggle navigation</span>
             <span className="icon-bar"></span>
             <span className="icon-bar"></span>
@@ -75,7 +77,7 @@ AppNavbar = React.createClass
             <img src={logo} style={{height:40}} />
           </a>
         </div>
-        <div className="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+        <div className="collapse navbar-collapse" id="pdnavbar">
           {pdMenu}
         </div>
       </div>
