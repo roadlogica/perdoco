@@ -9,6 +9,8 @@ AppJoin = require './AppJoin'
 AppSave = require './AppSave'
 AppLoad = require './AppLoad'
 
+ls = require '../js/_localstorage'
+
 PerdocoMainAppComponent = React.createClass
   displayName: "PerdocoMainAppComponent"
   getInitialState: ->
@@ -16,6 +18,8 @@ PerdocoMainAppComponent = React.createClass
   componentDidMount: ->
     @unsubscribe = window.reduxStore.subscribe(() =>
       @setState window.reduxStore.getState()
+      console.log 'PerdocoMainAppComponent Update'
+      ls.autoSaveProject('_autosave')
     )
   componentWillUnmount: ->
     @unsubscribe()

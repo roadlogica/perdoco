@@ -1,54 +1,62 @@
+require 'lodash'
+
 exports.getFaces = ->
-  storage = window.localStorage
-  if !storage.getItem('faces')
-    storage.setItem 'faces', JSON.stringify([])
-  JSON.parse storage.getItem('faces')
+  faces = window.reduxStore.getState().faces
+  if faces?
+    faces
+  else
+    []
 
 exports.storeFace = (face) ->
-  storage = window.localStorage
   faces = exports.getFaces()
   faces.push face
-  storage.setItem 'faces', JSON.stringify(faces)
+  window.reduxStore.dispatch({type:'SETFACES',faces:faces})
   faces
 
 exports.deleteFace = (index) ->
   storage = window.localStorage
   faces = exports.getFaces()
   faces.splice index, 1
-  storage.setItem 'faces', JSON.stringify(faces)
+  window.reduxStore.dispatch({type:'SETFACES',faces:faces})
   faces
 
 exports.saveLbUserFile = (f) ->
+  state = window.reduxStore.getState()
   storage = window.localStorage
   if !storage.getItem('files')
     storage.setItem 'files', JSON.stringify({})
   files = JSON.parse(storage.getItem('files'))
-  files[f] = document.getElementById('view').innerText
+  files[f] = state
   storage.setItem 'files', JSON.stringify(files)
   return
 
 exports.loadLbUserFile = (f) ->
+  console.log "loadLbUserFile " + f
   storage = window.localStorage
-  if !storage.getItem('files')
+  files = storage.getItem('files')
+  if !files
     storage.setItem 'files', JSON.stringify({})
   files = JSON.parse(storage.getItem('files'))
   file = files[f]
-  if typeof file == 'undefined'
-    return ''
+  if file?
+    if f == '_autosave'
+      window.reduxStore.dispatch({type:'INITIALLOAD',file})
+    else
+      window.reduxStore.dispatch({type:'LOAD',file})
   file
 
-exports.loadProjects = ->
+exports.loadLbUserFiles = () ->
   storage = window.localStorage
-  if !storage.getItem('projects')
-    storage.setItem 'projects', JSON.stringify({})
-  projects = JSON.parse(storage.getItem('projects'))
-  projects
+  files = storage.getItem('files')
+  if !files
+    storage.setItem 'files', JSON.stringify({})
+  o = JSON.parse(files)
+  delete o['_autosave']
+  JSON.stringify o
 
-exports.saveProject = (name, obj) ->
+exports.setLbUserFiles = (files) ->
   storage = window.localStorage
-  projects = loadProjects()
-  projects[name] = obj
-  storage.setItem 'projects', JSON.stringify(projects)
+  storage.setItem 'files', files
   return
 
 exports.faceDataToArray = (str) ->
@@ -84,8 +92,6 @@ exports.faceArrayToData = (arr) ->
   )
   hs
 
-require 'lodash'
-
 exports.getConfig = ->
   storage = window.localStorage
   if !storage.getItem('config')
@@ -100,6 +106,6 @@ exports.storeConfig = (config) ->
   storage.setItem 'config', JSON.stringify(config)
   return
 
-exports.autoSaveProject = _.debounce(exports.saveProject, 500)
+exports.autoSaveProject = _.debounce(exports.saveLbUserFile, 1000)
 exports.data_smiley = '0066660081423c00'
 exports.leds_smiley = exports.faceDataToArray exports.data_smiley

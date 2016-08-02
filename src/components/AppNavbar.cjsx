@@ -7,7 +7,7 @@ AppNavbar = React.createClass
     window.reduxStore.getState()
   componentDidMount: ->
     @unsubscribe = window.reduxStore.subscribe(() =>
-      @setState window.reduxStore.getState()
+      @setState appstate: window.reduxStore.getState().appstate
     )
   componentWillUnmount: ->
     @unsubscribe()

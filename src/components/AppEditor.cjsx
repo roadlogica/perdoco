@@ -9,14 +9,19 @@ AppEditor = React.createClass
   displayName: "AppEditor"
   getInitialState: ->
     window.reduxStore.getState()
+  saveSource: ->
+    window.reduxStore.dispatch({type:'SETSOURCE',sourcecode:@editor.getValue()})
+    return
   componentDidMount: ->
-    @unsubscribe = window.reduxStore.subscribe(() =>
-      @setState window.reduxStore.getState()
-    )
+    @debouncedSaveSource = _.debounce(@saveSource,1000)
+    that = this
     if /Android/.test(navigator.userAgent)
       inputStyle = 'textarea'
     else
       inputStyle = 'contenteditable'
+    if @state.sourcecode
+      document.getElementById("code").value = @state.sourcecode
+
     @editor = CodeMirror.fromTextArea document.getElementById("code"), {
       lineNumbers: true
       tabSize: 2
@@ -38,8 +43,11 @@ AppEditor = React.createClass
       if /Safari/.test(navigator.userAgent) and /Apple Computer/.test(navigator.vendor)  && window.focused
         window.shrinkForKeyboard()
       return
+    @editor.on 'change', ->
+      that.debouncedSaveSource()
+      return
   componentWillUnmount: ->
-    @unsubscribe()
+    @editor.toTextArea()
   render: ->
     <div className="row" id="innercanvas">
       <input id="element" style={{display:'none'}} />
@@ -47,6 +55,10 @@ AppEditor = React.createClass
       <textarea id="code" name="code">
       </textarea>
       </form>
+      <div className="customkeyscontanier" style={{display:'none'}}>
+        <div className="customkeys">
+        </div>
+      </div>
     </div>
 
 module.exports = AppEditor

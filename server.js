@@ -5,6 +5,7 @@ var http = require('http');
 var app = express();
 var coffee = require("coffee-script");
 var transform = require('coffee-react-transform');
+var _ = require('lodash');
 
 // require('babel-core/register')({
 //   presets: ['es2015', 'react']
@@ -93,8 +94,17 @@ app.get('/api/getplayers', function (req, res) {
   res.send(JSON.stringify(getPlayers()));
 });
 
-app.get('/loadgame/:game', function(req, res) {
-  var template = fs.readFileSync(__dirname + '/dist/games/Test.cjsx', 'utf-8');
+app.get('/api/listgames', function (req, res) {
+  fs.readdir(__dirname + '/dist/games',function(err,files) {
+    for (var i = 0; i < files.length; i++) {
+      files[i] = files[i].replace('.cjsx', '');
+    }
+    res.send(JSON.stringify(files));
+  })
+});
+
+app.get('/api/loadgame/:game', function(req, res) {
+  var template = fs.readFileSync(__dirname + '/dist/games/' + req.params.game + '.cjsx', 'utf-8');
   var transformed = transform(template);
   var compiled = coffee.compile(transformed, {bare: true});
   var header = "React = window.React;\nReactDOM = window.ReactDOM;\n";

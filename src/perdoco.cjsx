@@ -3,7 +3,6 @@
 #
 require './vendor/bootstrap/css/bootstrap.css'
 require './vendor/bootstrap/js/bootstrap.js'
-
 require './perdoco.css'
 
 React = require 'react'
@@ -16,6 +15,7 @@ ls = require './js/_localstorage'
 #
 defaultAppState = {
   appstate:'CANVAS'
+  games:[]
   config:ls.getConfig()
 }
 
@@ -23,13 +23,17 @@ perdocoRedux = (state = defaultAppState, action) ->
   switch action.type
     when 'SETSTATE'
       return Object.assign({}, state, appstate: action.appstate)
-    when 'FILTER'
-      return Object.assign({}, state, visibilityFilter: action.filter)
-    when 'TODO'
-      return Object.assign({}, state, todos: [ {
-        text: action.text
-        completed: false
-      } ])
+    when 'SETGAMES'
+      return Object.assign({}, state, games: action.games)
+    when 'SETFACES'
+      return Object.assign({}, state, faces: action.faces)
+    when 'SETSOURCE'
+      return Object.assign({}, state, sourcecode: action.sourcecode)
+    when 'INITIALLOAD'
+      return Object.assign({}, state, action.file)
+    when 'LOAD'
+      action.file.appstate = 'CANVAS'
+      return Object.assign({}, state, action.file)
     else
       return state
   return
@@ -42,9 +46,8 @@ window.reduxStore = createStore(perdocoRedux)
 PerdocoMainAppComponent = require './components/PerdocoMainAppComponent'
 ReactDOM.render <PerdocoMainAppComponent />, document.getElementById 'content'
 
-
 #
-# Full Screen App JS
+# Socket IO Client
 #
 console.log 'Perdoco Started'
 socket = require('socket.io-client')()
@@ -121,12 +124,13 @@ window.onbeforeunload = ->
 
 resetToTop = ->
   if document.body.scrollTop > 0 or document.documentElement.scrollTop > 0
-    window.origHeight = document.body.scrollHeight
-    window.shrinkForKeyboard()
+    window.scrollTo(0,0)
   return
 
-debouncedResetToTop = _.debounce( s._makeSearchRequest, 1000 )
+debouncedResetToTop = _.debounce( resetToTop, 1000 )
 
 window.onscroll = ->
   debouncedResetToTop()
   return
+
+ls.loadLbUserFile('_autosave')

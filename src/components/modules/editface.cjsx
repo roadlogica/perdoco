@@ -78,9 +78,9 @@ EditFace = React.createClass(
     ).bind(this)
 
     hexString = ls.faceArrayToData(@state.leds)
-
+    console.log @state.faces
     <div>
-      <h4 onClick={() => @copyHex(hexString)}><input id="hs" value={hexString}></input>&nbsp;<span className="glyphicon glyphicon-copy" />&nbsp;Copy</h4>
+      <h4 onClick={() => @copyHex(hexString)}><pre id="hs">{hexString}</pre>&nbsp;<span className="glyphicon glyphicon-copy" />&nbsp;Copy</h4>
       <small>{@state.msg}</small>
       <br />
       <div>
