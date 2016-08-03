@@ -27,7 +27,18 @@
 
 .selectfacecontainer {
   float:left;
-  padding:0px 1px 2px 1px;
-  background-color: #ddd;
+  padding:7px 15px 8px 15px;
   margin-bottom: 5px;
+  margin-right: 0px;
+  background-color: #eee;
+}
+
+.facesglyphicon {
+  margin:11px 0px 10px 0px;
+}
+
+.faceid {
+  font-size:24px;
+  margin-left:-5px;
+  color:gray;
 }

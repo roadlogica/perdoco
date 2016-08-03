@@ -65,3 +65,9 @@ html, body {
 .btn {
   margin-right:5px;
 }
+
+.clippy {
+    margin-top: -3px;
+    position: relative;
+    top: 3px;
+}

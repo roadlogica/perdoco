@@ -2,23 +2,35 @@ React = require 'react'
 SmallFace = require './smallface'
 ls = require '../../js/_localstorage'
 require './css/face.css'
+Clipboard = require 'clipboard'
 
 EditFace = React.createClass(
   getInitialState: ->
-    leds = ls.faceDataToArray('0000000000000000')
+    state = window.reduxStore.getState()
+    leds = ls.faceDataToArray(state.config.avatar)
     if @props.data?
       leds = ls.faceDataToArray(@props.face)
     {
       leds: leds
       face: @props.face
-      faces: ls.getFaces()
     }
+  componentDidMount: ->
+    new Clipboard('.btn');
+    @unsubscribe = window.reduxStore.subscribe((a) =>
+      state = window.reduxStore.getState()
+      if state.action == 'USEFACE'
+        leds = ls.faceDataToArray(state.face)
+        @setState leds: leds
+    )
+  componentWillUnmount: ->
+    @unsubscribe()
+
   itemClick: (r, c) ->
+    console.log r + "," + c
     if @state.leds[r][c] == 0
       @state.leds[r][c] = 1
     else
       @state.leds[r][c] = 0
-    @setState msg : null
     @setState led: @state.leds
     return
   onClear: ->
@@ -31,19 +43,11 @@ EditFace = React.createClass(
   onLoadSavedFace: (e) ->
     @setState leds: ls.faceDataToArray(@state.faces[e.target.id])
     return
-  onUseSavedFace: (e) ->
+  onApplyFace: () ->
+    window.reduxStore.dispatch({type:'APPLYFACE',face:@hexString, dest:@props.dest})
     return
   onDeleteSavedFace: (e) ->
     @setState faces: ls.deleteFace(e.target.id)
-    return
-  copyHex: (hexString) ->
-    try
-      document.getElementById("hs").select()
-      successful = document.execCommand('copy')
-      msg = if successful then 'successful' else 'unsuccessful'
-      @setState msg : 'Copying hex string was ' + msg
-    catch err
-      @setState msg : 'Oops, unable to copy'
     return
   render: ->
     r = -1
@@ -65,32 +69,29 @@ EditFace = React.createClass(
         {row.map(ledEditCol)}
       </div>
 
-    f = -1
-    selectFace = ((facedata) ->
-      <span className="selectface" key={f++}>
-        <span className="selectfacecontainer">
-          <SmallFace face={facedata} />
-        </span>
-        <button className="btn btn-default" id={f} onClick={@onDeleteSavedFace}>
-          <span className="glyphicon glyphicon-trash" />
-        </button>
-      </span>
-    ).bind(this)
+    @hexString = ls.faceArrayToData(@state.leds)
+    #document.getElementById('hs').value  = hexString
 
-    hexString = ls.faceArrayToData(@state.leds)
-    console.log @state.faces
+    if @props.showHex
+      showHex = (
+        <div className="input-group">
+          <span className="input-group-addon">New</span>
+          <input id="hs" type="text" className="form-control" aria-label="Hex String" value={@hexString}/>
+          <span className="input-group-btn">
+            <button style={{fontSize:20}} className="btn btn-default" data-clipboard-target="#hs">
+              <span className="glyphicon glyphicon-check pull-right"/>
+            </button>
+          </span>
+        </div>
+      )
     <div>
-      <h4 onClick={() => @copyHex(hexString)}><pre id="hs">{hexString}</pre>&nbsp;<span className="glyphicon glyphicon-copy" />&nbsp;Copy</h4>
-      <small>{@state.msg}</small>
-      <br />
+      {showHex}
       <div>
         {this.state.leds.map(ledEditRow)}
       </div>
-      <br />
       <button className="btn btn-danger" onClick={this.onClear}>Clear</button>
       <button className="btn btn-primary" onClick={this.onSave}>Save</button>
-      <h4>Saved Faces</h4>
-      {this.state.faces.map(selectFace)}
+      <button className="btn btn-success" onClick={this.onApplyFace}>Apply</button>
     </div>
 )
 

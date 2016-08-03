@@ -7,7 +7,6 @@ SmallFace = React.createClass
     { leds: ls.faceDataToArray(@props.face) }
   render: ->
     @state.leds = ls.faceDataToArray(@props.face)
-    console.log @props
     if @props.pixelSize?
       pixelSize = @props.pixelSize
     else

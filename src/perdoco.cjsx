@@ -20,6 +20,7 @@ defaultAppState = {
 }
 
 perdocoRedux = (state = defaultAppState, action) ->
+  state.action = action.type
   switch action.type
     when 'SETSTATE'
       return Object.assign({}, state, appstate: action.appstate)
@@ -29,6 +30,18 @@ perdocoRedux = (state = defaultAppState, action) ->
       return Object.assign({}, state, faces: action.faces)
     when 'SETSOURCE'
       return Object.assign({}, state, sourcecode: action.sourcecode)
+    when 'USEFACE'
+      return Object.assign({}, state, face: action.face)
+    when 'SETIDENTITY'
+      state.config.group = action.group
+      state.config.username = action.username
+      return state
+    when 'APPLYFACE'
+      if action.dest == 'AVATAR'
+        state.config.avatar = action.face
+        return state
+      else
+        return Object.assign({}, state, face: action.face, dest: action.dest)
     when 'INITIALLOAD'
       return Object.assign({}, state, action.file)
     when 'LOAD'

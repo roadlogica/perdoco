@@ -18,7 +18,6 @@ PerdocoMainAppComponent = React.createClass
   componentDidMount: ->
     @unsubscribe = window.reduxStore.subscribe(() =>
       @setState window.reduxStore.getState()
-      console.log 'PerdocoMainAppComponent Update'
       ls.autoSaveProject('_autosave')
     )
   componentWillUnmount: ->

@@ -121,6 +121,11 @@ app.get('/tutor/:game', function(req, res) {
   res.redirect('/tutor.html?loadgame='+game);
 });
 
+app.get('/tutor', function(req, res) {
+  var game = req.params.game;
+  res.redirect('/tutor.html');
+});
+
 
 app.use(express.static(__dirname + '/dist/'));
 
