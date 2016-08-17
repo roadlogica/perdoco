@@ -1,5 +1,6 @@
 React = require("react")
 logo = require './img/perdoco.png'
+SmallFace = require './modules/smallface'
 
 AppNavbar = React.createClass
   displayName: "AppNavbar"
@@ -25,6 +26,9 @@ AppNavbar = React.createClass
       cancelFullScreen.call doc
     $("#pdnavbar").collapse('hide')
     @forceUpdate()
+  runcode: () ->
+    window.reduxStore.dispatch({type:'RUNCODE'})
+    return
   menu: (menuitem) ->
     window.reduxStore.dispatch({type:'SETSTATE',appstate:menuitem})
     $("#pdnavbar").collapse('hide')
@@ -51,6 +55,12 @@ AppNavbar = React.createClass
           <li><a href="javascript:void(0)" onClick={() => @menu('IDENTITY')}><span className="glyphicon glyphicon-user" />&nbsp;Identity</a></li>
           {back}
         </ul>
+      else if @state.appstate == 'EDITOR'
+        <ul className="nav navbar-nav navbar-right">
+          {fullscreen}
+          <li><a href="javascript:void(0)" onClick={() => @runcode()}><span className="glyphicon glyphicon-play" />&nbsp;Run</a></li>
+          {back}
+        </ul>
       else if @state.appstate == 'IDENTITY'
         <ul className="nav navbar-nav navbar-right">
           {fullscreen}
@@ -75,9 +85,11 @@ AppNavbar = React.createClass
           </button>
           <a className="navbar-brand" href="javascript:void(0)" onClick={() => @menu('IDENTITY')} style={{padding:5,paddingLeft:10,paddingRight:10}}>
             <img src={logo} style={{height:40}} />
+            <SmallFace face={@state.config.avatar} pixelSize=5 />
           </a>
         </div>
         <div className="collapse navbar-collapse" id="pdnavbar">
+          <p className="navbar-text">{@state.config.username}</p>
           {pdMenu}
         </div>
       </div>

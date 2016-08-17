@@ -8,7 +8,10 @@ require './perdoco.css'
 React = require 'react'
 ReactDOM = require 'react-dom'
 { createStore, compose } = require 'redux'
+
 ls = require './js/_localstorage'
+pd = require './js/_perdoco_lib'
+lb = require './js/_lb_lib'
 
 #
 # Setup Global Redux Store
@@ -35,6 +38,12 @@ perdocoRedux = (state = defaultAppState, action) ->
     when 'SETIDENTITY'
       state.config.group = action.group
       state.config.username = action.username
+      state.config.ssid = action.ssid
+      state.config.password = action.password
+      return state
+    when 'CONFIGROBOT'
+      state.config.ssid = action.ssid
+      state.config.password = action.password
       return state
     when 'APPLYFACE'
       if action.dest == 'AVATAR'
@@ -47,6 +56,10 @@ perdocoRedux = (state = defaultAppState, action) ->
     when 'LOAD'
       action.file.appstate = 'CANVAS'
       return Object.assign({}, state, action.file)
+    when 'RUNCODE'
+      toRun = uglify state.sourcecode
+      eval toRun
+      return state
     else
       return state
   return
@@ -57,7 +70,6 @@ window.reduxStore = createStore(perdocoRedux)
 # Main App Component
 #
 PerdocoMainAppComponent = require './components/PerdocoMainAppComponent'
-ReactDOM.render <PerdocoMainAppComponent />, document.getElementById 'content'
 
 #
 # Socket IO Client
@@ -147,3 +159,5 @@ window.onscroll = ->
   return
 
 ls.loadLbUserFile('_autosave')
+
+ReactDOM.render <PerdocoMainAppComponent />, document.getElementById 'content'

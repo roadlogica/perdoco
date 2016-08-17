@@ -2,6 +2,7 @@ React = require("react")
 
 AppNavbar = require './AppNavbar'
 AppFooter = require './AppFooter'
+Morse = require './modules/morse'
 AppCanvas = require './AppCanvas'
 AppIdentity = require './AppIdentity'
 AppEditor = require './AppEditor'
@@ -44,5 +45,6 @@ PerdocoMainAppComponent = React.createClass
       <AppNavbar />
       {subComponent}
       <AppFooter />
+      <Morse />
     </div>
 module.exports = PerdocoMainAppComponent

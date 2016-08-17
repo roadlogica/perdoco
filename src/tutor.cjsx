@@ -4,24 +4,50 @@
 require './vendor/bootstrap/css/bootstrap.css'
 require './vendor/bootstrap/js/bootstrap.js'
 require './favicon.ico'
+require './perdoco.css'
 
 React = require 'react'
 ReactDOM = require 'react-dom'
 
-window.React = React
-window.ReactDOM = ReactDOM
+React = require 'react'
+ReactDOM = require 'react-dom'
+{ createStore, compose } = require 'redux'
+ls = require './js/_localstorage'
 
 #
 # Main App Component
 #
 TutorMainAppComponent = require './tutor/TutorMainAppComponent'
-ReactDOM.render <TutorMainAppComponent />, document.getElementById 'content'
 
 #
 # Socket.io Client
 #
 console.log 'Perdoco Tutor Started'
 socket = require('socket.io-client')()
+
+
+#
+# Setup Global Redux Store
+#
+defaultAppState = {
+  appstate:'CANVAS'
+  games:[]
+  config:ls.getConfig()
+}
+
+perdocoRedux = (state = defaultAppState, action) ->
+  state.action = action.type
+  switch action.type
+    when 'SETSTATE'
+      return Object.assign({}, state, appstate: action.appstate)
+    when 'LOAD'
+      action.file.appstate = 'CANVAS'
+      return Object.assign({}, state, action.file)
+    else
+      return state
+  return
+
+window.reduxStore = createStore(perdocoRedux)
 
 GetURLParameter = (sParam) ->
   sPageURL = window.location.search.substring(1)
@@ -56,3 +82,5 @@ game = GetURLParameter('loadgame')
 
 if game?
   loadTutorGame(game)
+
+ReactDOM.render <TutorMainAppComponent />, document.getElementById 'content'
